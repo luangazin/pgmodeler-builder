@@ -75,7 +75,6 @@ The container is configured with:
 - Timezone: America/Sao_Paulo
 - Working directory: /pgmodeler
 
-```bash
 ## License
 This Dockerfile is provided as-is. pgModeler is licensed under GPL v3. See [pgModeler's repository](https://github.com/pgmodeler/pgmodeler) for more details.
 
