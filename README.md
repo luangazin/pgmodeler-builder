@@ -31,6 +31,9 @@ docker run --rm -ti -e DISPLAY=$DISPLAY -v /opt/pgmodeler/:/root/.config/ -v /tm
 ## Syncing pgModeler data
 ```bash
 mkdir -p /opt/pgmodeler
+mkdir -p ~/workspace/pgmodeler
+```
+
 wget https://pgmodeler.io/img/pgmodeler_logo.png /opt/pgmodeler/pgmodeler_logo.png
 ```
 
@@ -43,14 +46,13 @@ Type=Application
 Name=PG Modeler
 GenericName=PostgreSQL Database Modeler
 Comment=PostgreSQL Database Modeler running in Docker
-Exec=sh -c "docker run --rm -e DISPLAY=$DISPLAY -v /opt/pgmodeler/:/root/.config/ -v /tmp/.X11-unix:/tmp/.X11-unix --network host luangazin/pgmodeler:1.2.0 >/dev/null 2>&1"
+Exec=sh -c "docker run --rm -e DISPLAY=$DISPLAY -v ~/workspace/pgmodeler:/root/pgmodeler -v /opt/pgmodeler/:/root/.config/ -v /tmp/.X11-unix:/tmp/.X11-unix --network host luangazin/pgmodeler:1.2.0 >/dev/null 2>&1"
 Icon=/opt/pgmodeler/pgmodeler_logo.png
 Terminal=false
 Categories=Development;Database;
 MimeType=application/x-pgmodeler;
 StartupNotify=true
 StartupWMClass=pgmodeler' > ~/.local/share/applications/pgmodeler-docker.desktop && chmod +x ~/.local/share/applications/pgmodeler-docker.desktop
-
 ```
 
 ## Details

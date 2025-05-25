@@ -26,6 +26,7 @@ RUN wget https://github.com/pgmodeler/pgmodeler/archive/refs/tags/${PGMODELER_VE
 RUN qmake pgmodeler.pro \
   && make -j${MAKE_JOBS} && make install \
   && mkdir -p /usr/local/lib/pgmodeler/plugins \
+  && mkdir -p /root/pgmodeler \
   && chmod 777 /usr/local/lib/pgmodeler/plugins
 
 # Clean unnecessary packages
