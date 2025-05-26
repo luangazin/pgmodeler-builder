@@ -30,15 +30,15 @@ docker run --rm -ti -e DISPLAY=$DISPLAY -v /opt/pgmodeler/:/root/.config/ -v /tm
 
 ## Syncing pgModeler data
 ```bash
-mkdir -p /opt/pgmodeler
+sudo mkdir -p /opt/pgmodeler
+xhost +si:localuser:root
+sudo wget https://pgmodeler.io/img/pgmodeler_logo.png -O /opt/pgmodeler/pgmodeler_logo.png
 mkdir -p ~/workspace/pgmodeler
-```
-
-wget https://pgmodeler.io/img/pgmodeler_logo.png /opt/pgmodeler/pgmodeler_logo.png
 ```
 
 ## Creating a Desktop Entry
 To create a desktop entry for pgModeler, you can use the following command:
+
 ```bash
 echo '[Desktop Entry]
 Version=1.0
@@ -75,7 +75,6 @@ The container is configured with:
 - Timezone: America/Sao_Paulo
 - Working directory: /pgmodeler
 
-```bash
 ## License
 This Dockerfile is provided as-is. pgModeler is licensed under GPL v3. See [pgModeler's repository](https://github.com/pgmodeler/pgmodeler) for more details.
 
