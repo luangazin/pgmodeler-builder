@@ -46,7 +46,7 @@ Type=Application
 Name=PG Modeler
 GenericName=PostgreSQL Database Modeler
 Comment=PostgreSQL Database Modeler running in Docker
-Exec=sh -c "docker run --rm -e DISPLAY=$DISPLAY -v ~/workspace/pgmodeler:/root/pgmodeler -v /opt/pgmodeler/:/root/.config/ -v /tmp/.X11-unix:/tmp/.X11-unix --network host luangazin/pgmodeler:1.2.0 >/dev/null 2>&1"
+Exec=sh -c "xhost +si:localuser:root && docker run --rm -e DISPLAY=$DISPLAY -v ~/workspace/pgmodeler:/root/pgmodeler -v /opt/pgmodeler/:/root/.config/ -v /tmp/.X11-unix:/tmp/.X11-unix --network host luangazin/pgmodeler:1.2.0"
 Icon=/opt/pgmodeler/pgmodeler_logo.png
 Terminal=false
 Categories=Development;Database;
