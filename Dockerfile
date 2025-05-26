@@ -27,10 +27,11 @@ RUN qmake pgmodeler.pro \
   && make -j${MAKE_JOBS} && make install \
   && mkdir -p /usr/local/lib/pgmodeler/plugins \
   && mkdir -p /root/pgmodeler \
-  && chmod 777 /usr/local/lib/pgmodeler/plugins
+  && chmod 777 /usr/local/lib/pgmodeler/plugins \
+  && chmod 777 /root/pgmodeler
 
 # Clean unnecessary packages
 RUN apt-get remove --purge -y wget qmake6 build-essential libxml2-dev libpq-dev pkg-config cmake \
   && rm -rf /var/lib/apt/lists/*
 
-ENTRYPOINT ["/usr/local/bin/pgmodeler"]
+ENTRYPOINT ["/usr/local/bin/pgmodeler"] 
