@@ -34,4 +34,4 @@ jobs:
           tags: |
             ${{ secrets.DOCKER_USERNAME }}/pgmodeler-builder:${{ github.ref_name }}
           build-args: |
-            PGMODELER_VERSION=${{ github.ref_name }}
+            PGMODELER_VERSION=v${{ github.ref_name }}
