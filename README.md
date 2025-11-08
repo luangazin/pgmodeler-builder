@@ -23,7 +23,7 @@ docker run --rm -ti -e DISPLAY=$DISPLAY -v /tmp/.X11-unix:/tmp/.X11-unix pgmodel
 
 Run the container with a volume to sync pgModeler data:
 ```bash
-docker run --rm -ti -e DISPLAY=$DISPLAY -v /opt/pgmodeler/:/root/.config/ -v /tmp/.X11-unix:/tmp/.X11-unix luangazin/pgmodeler:1.2.1
+docker run --rm -ti -e DISPLAY=$DISPLAY -v /opt/pgmodeler/:/root/.config/ -v /tmp/.X11-unix:/tmp/.X11-unix luangazin/pgmodeler:1.2.2
 ```
 
 # Configuring PgModeler desktop environment
@@ -46,7 +46,7 @@ Type=Application
 Name=PG Modeler
 GenericName=PostgreSQL Database Modeler
 Comment=PostgreSQL Database Modeler running in Docker
-Exec=sh -c "xhost +si:localuser:root && docker run --rm -e DISPLAY=$DISPLAY -v ~/workspace/pgmodeler:/root/pgmodeler -v /opt/pgmodeler/:/root/.config/ -v /tmp/.X11-unix:/tmp/.X11-unix --network host luangazin/pgmodeler:1.2.1"
+Exec=sh -c "xhost +si:localuser:root && docker run --rm -e DISPLAY=$DISPLAY -v ~/workspace/pgmodeler:/root/pgmodeler -v /opt/pgmodeler/:/root/.config/ -v /tmp/.X11-unix:/tmp/.X11-unix --network host luangazin/pgmodeler:1.2.2"
 Icon=/opt/pgmodeler/pgmodeler_logo.png
 Terminal=false
 Categories=Development;Database;
@@ -58,7 +58,7 @@ StartupWMClass=pgmodeler' > ~/.local/share/applications/pgmodeler-docker.desktop
 ## Details
 
 - Base image: Ubuntu 24.04
-- pgModeler version: 1.2.1
+- pgModeler version: 1.2.2
 - Qt version: 6
 - Build dependencies:
   - g++
