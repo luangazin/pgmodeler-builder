@@ -17,7 +17,7 @@ RUN ln -snf /usr/share/zoneinfo/America/Sao_Paulo /etc/localtime && echo 'Americ
 ENV PATH="/usr/lib/qt6/bin:$PATH"
 
 #Downloading and extracting pgmodeler
-RUN wget https://github.com/pgmodeler/pgmodeler/archive/refs/tags/${PGMODELER_VERSION}.tar.gz -O pgmodeler.tar.gz && \
+RUN wget https://github.com/nullptrlabs/pgmodeler/archive/refs/tags/${PGMODELER_VERSION}.tar.gz -O pgmodeler.tar.gz && \
     tar -xzf pgmodeler.tar.gz --strip 1 && \
     rm -rf pgmodeler.tar.gz
 
@@ -34,4 +34,4 @@ RUN qmake pgmodeler.pro \
 RUN apt-get remove --purge -y wget qmake6 build-essential libxml2-dev libpq-dev pkg-config cmake \
   && rm -rf /var/lib/apt/lists/*
 
-ENTRYPOINT ["/usr/local/bin/pgmodeler"] 
+ENTRYPOINT ["/usr/local/bin/pgmodeler"]
