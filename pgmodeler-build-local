@@ -1,0 +1,92 @@
+#!/bin/bash
+
+# Clean up previous extraction with sudo
+sudo rm -rf /tmp/pgmodeler-extract/*
+
+docker build --build-arg PGMODELER_VERSION=v1.2.3 --build-arg MAKE_JOBS=16 -t pgmodeler:1.2.3 -f Dockerfile.localbuild .
+
+docker run --rm -v /tmp/pgmodeler-extract:/output pgmodeler:1.2.3 bash -c "
+  mkdir -p /output/bin /output/lib /output/pgmodeler-lib /output/certs && \
+  cp /usr/local/bin/pgmodeler /output/bin/ && \
+  cp -r /usr/local/lib/pgmodeler /output/pgmodeler-lib/ && \
+  cp -r /usr/local/share/pgmodeler /output/ && \
+  cp -r /etc/ssl/certs /output/certs/ 2>/dev/null || true && \
+  find /usr/lib /usr/lib64 -name 'platforms' -type d 2>/dev/null | head -1 | xargs -I {} cp -r {} /output/lib/ 2>/dev/null || true && \
+  cp /usr/lib/x86_64-linux-gnu/libQt6*.so* /output/lib/ 2>/dev/null || true && \
+  cp /usr/lib/x86_64-linux-gnu/libxml2.so* /output/lib/ 2>/dev/null || true && \
+  cp /usr/lib/x86_64-linux-gnu/libpq.so* /output/lib/ 2>/dev/null || true && \
+  cp /usr/lib/x86_64-linux-gnu/libb2.so* /output/lib/ 2>/dev/null || true && \
+  cp /usr/lib/x86_64-linux-gnu/libharfbuzz.so* /output/lib/ 2>/dev/null || true && \
+  cp /usr/lib/x86_64-linux-gnu/libfreetype.so* /output/lib/ 2>/dev/null || true && \
+  cp /usr/lib/x86_64-linux-gnu/libpng*.so* /output/lib/ 2>/dev/null || true && \
+  cp /usr/lib/x86_64-linux-gnu/libjpeg*.so* /output/lib/ 2>/dev/null || true && \
+  cp /usr/lib/x86_64-linux-gnu/libssl.so* /output/lib/ 2>/dev/null || true && \
+  cp /usr/lib/x86_64-linux-gnu/libcrypto.so* /output/lib/ 2>/dev/null || true
+"
+
+# Remove old installation
+sudo rm -rf /usr/local/lib/pgmodeler
+sudo rm -rf /usr/local/lib/pgmodeler-libs
+sudo rm -rf /usr/local/bin/conf
+sudo rm -rf /usr/local/share/pgmodeler
+sudo rm -f /usr/local/bin/pgmodeler.bin
+sudo rm -f /usr/local/bin/pgmodeler
+
+# Install new version
+sudo mkdir -p /usr/local/lib/pgmodeler-libs
+sudo cp /tmp/pgmodeler-extract/bin/pgmodeler /usr/local/bin/pgmodeler.bin
+sudo cp -r /tmp/pgmodeler-extract/pgmodeler-lib/* /usr/local/lib/
+sudo cp -r /tmp/pgmodeler-extract/pgmodeler /usr/local/share/pgmodeler
+sudo cp -r /tmp/pgmodeler-extract/lib/platforms /usr/local/lib/pgmodeler-libs/
+sudo cp /tmp/pgmodeler-extract/lib/*.so* /usr/local/lib/pgmodeler-libs/ 2>/dev/null || true
+
+# Set proper permissions and ownership
+sudo chmod -R 755 /usr/local/lib/pgmodeler-libs
+sudo chmod -R 755 /usr/local/lib/pgmodeler
+sudo chmod -R 755 /usr/local/share/pgmodeler
+sudo chmod 755 /usr/local/bin/pgmodeler.bin
+sudo chown -R root:root /usr/local/lib/pgmodeler-libs
+sudo chown -R root:root /usr/local/lib/pgmodeler
+sudo chown -R root:root /usr/local/share/pgmodeler
+sudo chown root:root /usr/local/bin/pgmodeler.bin
+
+sudo ldconfig /usr/local/lib 2>/dev/null || true
+
+# Copy configuration files to user's home
+mkdir -p ~/.config/pgmodeler-1.2
+cp /tmp/pgmodeler-extract/pgmodeler/conf/* ~/.config/pgmodeler-1.2/ 2>/dev/null || true
+
+# Create wrapper script to set library and plugin paths
+sudo bash -c 'cat > /usr/local/bin/pgmodeler << "WRAPPER"
+#!/bin/bash
+export LD_LIBRARY_PATH="/usr/local/lib/pgmodeler-libs:/usr/local/lib:\$LD_LIBRARY_PATH"
+export QT_QPA_PLATFORM_PLUGIN_PATH="/usr/local/lib/pgmodeler-libs/platforms"
+export QT_QPA_PLATFORM=xcb
+export SSL_CERT_FILE=/etc/ssl/certs/ca-certificates.crt
+export SSL_CERT_DIR=/etc/ssl/certs
+exec /usr/local/bin/pgmodeler.bin "\$@"
+WRAPPER
+'
+sudo chmod 755 /usr/local/bin/pgmodeler
+sudo chown root:root /usr/local/bin/pgmodeler
+
+# Create directory for pgmodeler logo and download it
+if [ ! -f /opt/pgmodeler/pgmodeler_logo.png ]; then
+    sudo mkdir -p /opt/pgmodeler
+    sudo wget https://pgmodeler.io/img/pgmodeler_logo.png -O /opt/pgmodeler/pgmodeler_logo.png
+fi
+
+# Install to your user'\''s applications menu
+mkdir -p ~/.local/share/applications
+cp pgmodeler.desktop ~/.local/share/applications/
+
+# Install system-wide (requires sudo)
+sudo cp pgmodeler.desktop /usr/share/applications/
+
+# Update the desktop database
+update-desktop-database ~/.local/share/applications/ 2>/dev/null || true
+sudo update-desktop-database /usr/share/applications/ 2>/dev/null || true
+
+echo "pgmodeler installed successfully!"
+echo "Run: pgmodeler"
+

@@ -1,0 +1,11 @@
+[Desktop Entry]
+Version=1.0
+Type=Application
+Name=pgmodeler
+Comment=PostgreSQL Database Modeler
+Exec=/usr/local/bin/pgmodeler %F
+Icon=/opt/pgmodeler/pgmodeler_logo.png
+Categories=Development;Database;
+Terminal=false
+StartupNotify=true
+MimeType=application/x-pgmodeler;
