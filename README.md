@@ -9,6 +9,43 @@ This repository contains a Dockerfile to build [pgModeler](https://pgmodeler.io/
 
 ## Usage
 
+### Option 1: Build and Install Locally (Recommended)
+
+Use the `local-build` script to build pgModeler in Docker and install it directly on your machine:
+
+```bash
+chmod +x local-build
+./local-build
+```
+
+This will:
+- Build pgModeler v1.2.3 in a Docker container
+- Extract the binary, libraries, and dependencies
+- Install to your system (`/usr/local/bin`, `/usr/local/lib`, `/usr/local/share`)
+- Set up a desktop entry with icon
+- Configure all environment variables
+
+After installation, run pgModeler directly:
+```bash
+pgmodeler
+```
+
+Or launch it from your applications menu!
+
+**Customization:**
+- Edit `PGMODELER_VERSION` to change the version (e.g., `v1.2.2`)
+- Edit `MAKE_JOBS` to adjust parallel build threads (default: 16)
+- Uses `Dockerfile.localbuild` for the build
+
+**Installed locations:**
+- Binary: `/usr/local/bin/pgmodeler` (wrapper script)
+- Libraries: `/usr/local/lib/pgmodeler/` and `/usr/local/lib/pgmodeler-libs/`
+- Resources: `/usr/local/share/pgmodeler/`
+- Configuration: `~/.config/pgmodeler-1.2/`
+- Desktop entry: `~/.local/share/applications/pgmodeler.desktop`
+
+### Option 2: Run in Docker Container
+
 1. Build the Docker image:
 ```bash
 docker build -t pgmodeler .
