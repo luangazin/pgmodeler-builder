@@ -83,12 +83,12 @@ sudo chown root:root /usr/local/bin/pgmodeler
 if [ -f /usr/local/bin/pgmodeler-cli.bin ]; then
 sudo bash -c 'cat > /usr/local/bin/pgmodeler-cli << "WRAPPER"
 #!/bin/bash
-export LD_LIBRARY_PATH="/usr/local/lib/pgmodeler-libs:/usr/local/lib:\$LD_LIBRARY_PATH"
+export LD_LIBRARY_PATH="/usr/local/lib/pgmodeler-libs:/usr/local/lib:$LD_LIBRARY_PATH"
 export QT_QPA_PLATFORM_PLUGIN_PATH="/usr/local/lib/pgmodeler-libs/platforms"
 export QT_QPA_PLATFORM=offscreen
 export SSL_CERT_FILE=/etc/ssl/certs/ca-certificates.crt
 export SSL_CERT_DIR=/etc/ssl/certs
-exec /usr/local/bin/pgmodeler-cli.bin "\$@"
+exec /usr/local/bin/pgmodeler-cli.bin "$@"
 WRAPPER
 '
 sudo chmod 755 /usr/local/bin/pgmodeler-cli
