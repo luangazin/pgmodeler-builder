@@ -8,6 +8,7 @@ docker build --build-arg PGMODELER_VERSION=v1.2.3 --build-arg MAKE_JOBS=16 -t pg
 docker run --rm -v /tmp/pgmodeler-extract:/output pgmodeler:1.2.3 bash -c "
   mkdir -p /output/bin /output/lib /output/pgmodeler-lib /output/certs && \
   cp /usr/local/bin/pgmodeler /output/bin/ && \
+  cp /usr/local/bin/pgmodeler-cli /output/bin/ 2>/dev/null || true && \
   cp -r /usr/local/lib/pgmodeler /output/pgmodeler-lib/ && \
   cp -r /usr/local/share/pgmodeler /output/ && \
   cp -r /etc/ssl/certs /output/certs/ 2>/dev/null || true && \
@@ -31,6 +32,8 @@ sudo rm -rf /usr/local/bin/conf
 sudo rm -rf /usr/local/share/pgmodeler
 sudo rm -f /usr/local/bin/pgmodeler.bin
 sudo rm -f /usr/local/bin/pgmodeler
+sudo rm -f /usr/local/bin/pgmodeler-cli.bin
+sudo rm -f /usr/local/bin/pgmodeler-cli
 
 # Install new version
 sudo mkdir -p /usr/local/lib/pgmodeler-libs
@@ -39,6 +42,9 @@ sudo cp -r /tmp/pgmodeler-extract/pgmodeler-lib/* /usr/local/lib/
 sudo cp -r /tmp/pgmodeler-extract/pgmodeler /usr/local/share/pgmodeler
 sudo cp -r /tmp/pgmodeler-extract/lib/platforms /usr/local/lib/pgmodeler-libs/
 sudo cp /tmp/pgmodeler-extract/lib/*.so* /usr/local/lib/pgmodeler-libs/ 2>/dev/null || true
+if [ -f /tmp/pgmodeler-extract/bin/pgmodeler-cli ]; then
+  sudo cp /tmp/pgmodeler-extract/bin/pgmodeler-cli /usr/local/bin/pgmodeler-cli.bin
+fi
 
 # Set proper permissions and ownership
 sudo chmod -R 755 /usr/local/lib/pgmodeler-libs
@@ -49,6 +55,10 @@ sudo chown -R root:root /usr/local/lib/pgmodeler-libs
 sudo chown -R root:root /usr/local/lib/pgmodeler
 sudo chown -R root:root /usr/local/share/pgmodeler
 sudo chown root:root /usr/local/bin/pgmodeler.bin
+if [ -f /usr/local/bin/pgmodeler-cli.bin ]; then
+  sudo chmod 755 /usr/local/bin/pgmodeler-cli.bin
+  sudo chown root:root /usr/local/bin/pgmodeler-cli.bin
+fi
 
 sudo ldconfig /usr/local/lib 2>/dev/null || true
 
@@ -70,6 +80,21 @@ WRAPPER
 sudo chmod 755 /usr/local/bin/pgmodeler
 sudo chown root:root /usr/local/bin/pgmodeler
 
+if [ -f /usr/local/bin/pgmodeler-cli.bin ]; then
+sudo bash -c 'cat > /usr/local/bin/pgmodeler-cli << "WRAPPER"
+#!/bin/bash
+export LD_LIBRARY_PATH="/usr/local/lib/pgmodeler-libs:/usr/local/lib:\$LD_LIBRARY_PATH"
+export QT_QPA_PLATFORM_PLUGIN_PATH="/usr/local/lib/pgmodeler-libs/platforms"
+export QT_QPA_PLATFORM=offscreen
+export SSL_CERT_FILE=/etc/ssl/certs/ca-certificates.crt
+export SSL_CERT_DIR=/etc/ssl/certs
+exec /usr/local/bin/pgmodeler-cli.bin "\$@"
+WRAPPER
+'
+sudo chmod 755 /usr/local/bin/pgmodeler-cli
+sudo chown root:root /usr/local/bin/pgmodeler-cli
+fi
+
 # Create directory for pgmodeler logo and download it
 if [ ! -f /opt/pgmodeler/pgmodeler_logo.png ]; then
     sudo mkdir -p /opt/pgmodeler
@@ -84,9 +109,12 @@ cp pgmodeler.desktop ~/.local/share/applications/
 sudo cp pgmodeler.desktop /usr/share/applications/
 
 # Update the desktop database
-update-desktop-database ~/.local/share/applications/ 2>/dev/null || true
-sudo update-desktop-database /usr/share/applications/ 2>/dev/null || true
 
 echo "pgmodeler installed successfully!"
 echo "Run: pgmodeler"
+if [ -f /usr/local/bin/pgmodeler-cli ]; then
+echo "Run: pgmodeler-cli"
+else
+echo "Warning: pgmodeler-cli was not found in this build output."
+fi
 
